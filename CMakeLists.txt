@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
 project(Ex3)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Ex3 main.cpp)
+include_directories(.)
+
+add_executable(Ex3
+        main.cpp)

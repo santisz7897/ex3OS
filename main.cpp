@@ -3,10 +3,12 @@
 
 class BoundedQ{
 public:
+    explicit
     BoundedQ(int size) {
         std::queue<std::string> hey;
         this->isStop = false;
         this->queue = hey;
+        this->size = size;
     }
     bool isStop;
     std::queue<std::string> queue;
@@ -22,3 +24,4 @@ int main() {
     std::cout << "Hello, World!" << std::endl;
     return 0;
 }
+
