@@ -33,7 +33,7 @@ public:
     }
 
     void insertToCoEditorBuffer(std::string article){
-
+        printf("hry");
     }
 
 };
