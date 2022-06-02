@@ -51,14 +51,7 @@ build cmake_object_order_depends_target_Ex3: phony || CMakeFiles/Ex3.dir
 
 build CMakeFiles/Ex3.dir/main.cpp.o: CXX_COMPILER__Ex3_Debug /Users/santiago/Desktop/University/OS/ex3OS/main.cpp || cmake_object_order_depends_target_Ex3
   DEP_FILE = CMakeFiles/Ex3.dir/main.cpp.o.d
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu++14
-  INCLUDES = -I/Users/santiago/Desktop/University/OS/ex3OS/.
-  OBJECT_DIR = CMakeFiles/Ex3.dir
-  OBJECT_FILE_DIR = CMakeFiles/Ex3.dir
-
-build CMakeFiles/Ex3.dir/Buffer.cpp.o: CXX_COMPILER__Ex3_Debug /Users/santiago/Desktop/University/OS/ex3OS/Buffer.cpp || cmake_object_order_depends_target_Ex3
-  DEP_FILE = CMakeFiles/Ex3.dir/Buffer.cpp.o.d
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu++14
+  FLAGS = -lpthread -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu++11
   INCLUDES = -I/Users/santiago/Desktop/University/OS/ex3OS/.
   OBJECT_DIR = CMakeFiles/Ex3.dir
   OBJECT_FILE_DIR = CMakeFiles/Ex3.dir
@@ -71,8 +64,8 @@ build CMakeFiles/Ex3.dir/Buffer.cpp.o: CXX_COMPILER__Ex3_Debug /Users/santiago/D
 #############################################
 # Link the executable Ex3
 
-build Ex3: CXX_EXECUTABLE_LINKER__Ex3_Debug CMakeFiles/Ex3.dir/main.cpp.o CMakeFiles/Ex3.dir/Buffer.cpp.o
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk
+build Ex3: CXX_EXECUTABLE_LINKER__Ex3_Debug CMakeFiles/Ex3.dir/main.cpp.o
+  FLAGS = -lpthread -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk
   OBJECT_DIR = CMakeFiles/Ex3.dir
   POST_BUILD = :
   PRE_LINK = :

@@ -1,33 +1,33 @@
 //
 // Created by Santiago Szterenberg on 31/05/2022.
 //
-#include <string>
-#include "Buffer.h"
+
 #ifndef EX3_PRODUCER_H
 #define EX3_PRODUCER_H
+#include <string>
+#include "Buffer.h"
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
 
 
 class Producer {
 public:
     int amountOfArticlesLeft;
     int idx;
-    Buffer buffer;
+    Buffer* buffer;
     int sportsCount;
     int weatherCount;
     int newsCount;
 
     explicit
-    Producer(Buffer &buffer, int idx, int amountOfArticles){
+    Producer(Buffer *buffer, int idx, int amountOfArticles){
         this->amountOfArticlesLeft = amountOfArticles;
         this->idx = idx;
         this->buffer = buffer;
         this->sportsCount = 0;
         this->weatherCount = 0;
         this->newsCount = 0;
-    }
-
-    void decreaseArticleCount(){
-        this->amountOfArticlesLeft--;
     }
 
     int getIdx(){
@@ -52,7 +52,9 @@ public:
     }
 
     std::string defineTypeArticle(){
-        int randomNum = rand() % 3;
+        srand(time(nullptr));
+        int randomNum = (rand());
+        randomNum %= 3;
         std::string articleType;
         if (!randomNum)
             articleType = "SPORTS";
@@ -60,17 +62,21 @@ public:
             articleType = "NEWS";
         else
             articleType = "WEATHER";
-        this->incNews(articleType);
         return articleType;
     }
 
     std::string produceArticle(){
-        this->decreaseArticleCount();
         std::string articleType = defineTypeArticle();
         std::string producerIdx = std::to_string(this->getIdx());
         std::string typeCount = this->getNewsCount(articleType);
+        this->incNews(articleType);
         return "Producer " + producerIdx + " " + articleType + " " + typeCount;
     }
+
+    void pushArticle(std::string article){
+        this->buffer->insert(article);
+    }
+
 };
 
 

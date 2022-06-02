@@ -12,30 +12,56 @@ const int NEWS = 2;
 
 class Dispatcher {
 public:
-    Buffer producerBuffers[];
-    Buffer coEditorsBuffers[];
-    int numOfProducersLeft;
+    int numOfProducersStopped;
     int totalBuffers;
     int bufferIdx;
-    Dispatcher(Buffer producerBuffers[], Buffer coEditorBuffers[], int num){
+
+    Buffer** producerBuffers;
+    Buffer** coEditorsBuffers;
+
+    Dispatcher(Buffer* producerBuffers[], Buffer* coEditorBuffers[], int num){
         this->producerBuffers = producerBuffers;
         this->coEditorsBuffers = coEditorBuffers;
-        this->numOfProducersLeft = num;
+        this->numOfProducersStopped = 0;
         this->totalBuffers = num;
         this->bufferIdx = 0;
     }
 
     std::string getNewsFromProducer(){
-        this->bufferIdx++;
         this->bufferIdx %= this->totalBuffers;
-        Buffer buffer = this->producerBuffers[bufferIdx];
-        return buffer.remove();
+        Buffer* buffer = this->producerBuffers[bufferIdx];
+        if (!canRemove(buffer)) {
+            this->numOfProducersStopped++;
+            return "DONE";
+        }
+        std::string article = buffer->remove();
+        this->bufferIdx++;
+        return article;
     }
 
-    void insertToCoEditorBuffer(std::string article){
-        printf("hry");
+    int getBufferNumCoEditor(std::string article){
+        int len = article.size();
+        char cpyArticle[len + 1];
+        char* result;
+        strcpy(cpyArticle, article.c_str());
+        result = strtok(cpyArticle, " ");
+        for (int i = 0; i < 2; ++i) {
+            result = strtok(nullptr, " ");
+        }
+        std::cout << "Im entering someting" << std::endl;
+        if (!strcmp(result, "SPORTS"))
+            return 0;
+        else if (!strcmp(result, "WEATHER"))
+            return 1;
+        else
+            return 2;
     }
-
+    bool canRemove(Buffer* buffer){
+        std::string article = buffer->queue.front();
+        if (article == "DONE")
+            return false;
+        return true;
+    }
 };
 
 
