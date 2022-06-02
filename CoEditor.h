@@ -18,7 +18,8 @@ public:
     }
 
     std::string extractFromDispatcher(){
-        return this->dispatcherBuffer->remove();
+        std::string article = this->dispatcherBuffer->remove();
+        return article;
     }
 
     void insertToScreenBuffer(std::string article){

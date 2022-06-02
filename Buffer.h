@@ -5,7 +5,7 @@
 #ifndef EX3_BUFFER_H
 #define EX3_BUFFER_H
 #include <pthread.h>
-#include <sys/semaphore.h>
+#include <semaphore.h>
 
 class Buffer {
 public:
@@ -14,14 +14,14 @@ public:
     pthread_mutex_t mutex;
     std::queue<std::string> queue;
     int size;
+    bool isStop;
 
     Buffer() {
         std::queue<std::string> newQueue;
         this->queue = newQueue;
         pthread_mutex_init(&mutex, nullptr);
-        int hi = sem_init(&full, 0, 0);
-        std::cout <<hi << std::endl;
-        std::cout << std::endl;
+        sem_init(&full, 0, 0);
+        isStop = false;
     }
     void insert(std::string item) {
         sem_wait(&this->empty);
@@ -46,14 +46,12 @@ public:
 
     void turnToUnbound(){
         this->size = INT16_MAX;
-        int hey = sem_init(&this->empty, 0, INT16_MAX);
-        std::cout << hey << std::endl;
+        sem_init(&this->empty, 0, INT16_MAX);
     }
 
     void setSize(int size){
         this->size = size;
-        int hey = sem_init(&this->empty, 0, size);
-        std::cout << hey << std::endl;
+        sem_init(&this->empty, 0, size);
     }
 
 

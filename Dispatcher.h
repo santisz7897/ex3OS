@@ -7,7 +7,7 @@
 const int SPORT = 0;
 const int WEATHER = 1;
 const int NEWS = 2;
-#include <string>
+#include <cstring>
 #include "Buffer.h"
 
 class Dispatcher {
@@ -15,31 +15,40 @@ public:
     int numOfProducersStopped;
     int totalBuffers;
     int bufferIdx;
+    bool* isStopped;
 
     Buffer** producerBuffers;
     Buffer** coEditorsBuffers;
 
-    Dispatcher(Buffer* producerBuffers[], Buffer* coEditorBuffers[], int num){
+    Dispatcher(Buffer* producerBuffers[], Buffer* coEditorBuffers[], int num, bool isStopped[]){
         this->producerBuffers = producerBuffers;
         this->coEditorsBuffers = coEditorBuffers;
         this->numOfProducersStopped = 0;
         this->totalBuffers = num;
         this->bufferIdx = 0;
+        this->isStopped = isStopped;
     }
 
     std::string getNewsFromProducer(){
         this->bufferIdx %= this->totalBuffers;
         Buffer* buffer = this->producerBuffers[bufferIdx];
-        if (!canRemove(buffer)) {
-            this->numOfProducersStopped++;
-            return "DONE";
+        std::string article = "NEXT";
+        if (!this->isStopped[bufferIdx]){
+            article = buffer->remove();
+            if (article == "DONE"){
+                this->isStopped[bufferIdx] = true;
+                this->numOfProducersStopped++;
+            }
         }
-        std::string article = buffer->remove();
         this->bufferIdx++;
         return article;
+
     }
 
     int getBufferNumCoEditor(std::string article){
+        if (article == "DONE"){
+            return -1;
+        }
         int len = article.size();
         char cpyArticle[len + 1];
         char* result;
@@ -48,19 +57,12 @@ public:
         for (int i = 0; i < 2; ++i) {
             result = strtok(nullptr, " ");
         }
-        std::cout << "Im entering someting" << std::endl;
         if (!strcmp(result, "SPORTS"))
             return 0;
         else if (!strcmp(result, "WEATHER"))
             return 1;
         else
             return 2;
-    }
-    bool canRemove(Buffer* buffer){
-        std::string article = buffer->queue.front();
-        if (article == "DONE")
-            return false;
-        return true;
     }
 };
 

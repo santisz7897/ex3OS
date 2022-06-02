@@ -52,7 +52,6 @@ public:
     }
 
     std::string defineTypeArticle(){
-        srand(time(nullptr));
         int randomNum = (rand());
         randomNum %= 3;
         std::string articleType;

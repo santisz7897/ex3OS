@@ -7,6 +7,8 @@
 
 #include <string>
 #include <iostream>
+#include <chrono>
+#include <thread>
 #include "Buffer.h"
 
 class ScreenManager {
@@ -25,6 +27,7 @@ public:
         return article;
     }
     void printToScreen(std::string article){
+        std::this_thread::sleep_for(std::chrono::milliseconds(400));
         std::cout << article << std::endl;
     }
 };

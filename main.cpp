@@ -7,7 +7,6 @@
 #include "CoEditor.h"
 #include "ScreenManager.h"
 #include <pthread.h>
-#include <chrono>
 #include <thread>
 
 
@@ -18,21 +17,26 @@ void* producerFunc(void *args){
     for (int i = articlesLeft; i > 0; --i) {
         std::string article = producer.produceArticle();
         producer.pushArticle(article);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
+    producer.buffer->isStop = true;
     producer.pushArticle("DONE");
-    return ((void *) nullptr);
 }
 
 void* dispatcherFunc(void *args){
     Dispatcher dispatcher = *((Dispatcher*)args);
     while (dispatcher.numOfProducersStopped != dispatcher.totalBuffers){
         std::string article = dispatcher.getNewsFromProducer();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        if (article == "NEXT"){
+            continue;
+        }
+        int num = dispatcher.getBufferNumCoEditor(article);
         if (article != "DONE"){
-            int num = dispatcher.getBufferNumCoEditor(article);
             dispatcher.coEditorsBuffers[num]->insert(article);
         }
+    }
+    for (int i = 0; i < 3; ++i) {
+        dispatcher.coEditorsBuffers[i]->insert("DONE");
     }
     return ((void *) nullptr);
 }
@@ -41,11 +45,12 @@ void* coEditorFunc(void *args){
     CoEditor coEditor = *((CoEditor*)args);
     while (true){
         std::string article = coEditor.extractFromDispatcher();
-        coEditor.insertToScreenBuffer(article);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         if (article == "DONE"){
+            coEditor.insertToScreenBuffer("DONE");
             return ((void *) nullptr);
         }
+        coEditor.insertToScreenBuffer(article);
+
     }
 }
 
@@ -55,7 +60,6 @@ void* screenManagerFunc(void *args){
         std::string article = screenManager.extractFromBuffer();
         if (article != "DONE")
             screenManager.printToScreen(article);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     return ((void *) nullptr);
 }
@@ -71,10 +75,10 @@ int main(int argc, char *argv[]) {
     // string to hold the input
     std::string line;
     int numOfProducers = 0;
-
     if ( config.is_open() ) {
         while ( config ) {
             std::getline(config, line);
+            sizeOfScreenBuffer = std::stoi(line);
             std::getline(config, line);
             // if this is the producer number
             if (config)
@@ -87,7 +91,6 @@ int main(int argc, char *argv[]) {
             sizeOfEveryBuffer.push_back(std::stoi(line));
             std::getline(config, line);
         }
-        sizeOfScreenBuffer = std::stoi(line);
     }
 
     const int SIZE = numOfProducers;
@@ -119,7 +122,11 @@ int main(int argc, char *argv[]) {
         coEditorBuffers[i]->turnToUnbound();
         coEditors[i] = new CoEditor(coEditorBuffers[i], screenManagerBuffer);
     }
-    dispatcher = new Dispatcher(buffers, coEditorBuffers, SIZE);
+    bool allFalse[SIZE];
+    for (int i = 0; i < SIZE; ++i) {
+        allFalse[i] = false;
+    }
+    dispatcher = new Dispatcher(buffers, coEditorBuffers, SIZE, allFalse);
 
     pthread_t producersThread[SIZE];
     pthread_t dispatcherT;
