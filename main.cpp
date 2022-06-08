@@ -61,6 +61,7 @@ void* screenManagerFunc(void *args){
         if (article != "DONE")
             screenManager.printToScreen(article);
     }
+    screenManager.printToScreen("DONE");
     return ((void *) nullptr);
 }
 
